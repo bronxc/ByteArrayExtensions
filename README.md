@@ -1,109 +1,121 @@
 # Byte Array Extensions
 
-- Insert Variant 1
+- Insert (Variant 1)
 
 Inserts a sequence at the top of a byte array
 Returns: Byte Array
-````
+```
 Byte().Insert(<sequence>)
-````
+```
 
-- Insert Variant 2
+- Insert (Variant 2)
 
 Inserts a sequence at a given index of a byte array
 Returns: Byte Array
-````
+```
 Byte().Insert(<sequence>,index)
-````
+```
 
 - Append
 
 Appends a sequence to the end of a byte array
 Returns: Byte Array
-````
+```
 Byte().Append(<sequence>)
-````
+```
 
-[b]BeginsWith[/b]
+- BeginsWith
+
 Checks if the byte array begins with the sequence
 Returns: Boolean
-````
+```
 Byte().BeginsWith(<sequence>)
-````
+```
 
-[b]EndsWith[/b]
+- EndsWith
+
 Checks if the byte array ends with the sequence
 Returns: Boolean
-````
+```
 Byte().EndsWith(<sequence>)
-````
+```
 
-[b]NibbleTop[/b]
+- NibbleTop
+
 Removes bytes starting from the top with given length
 Returns: Byte Array
-````
+```
 Byte().NibbleTop(<length>)
-````
+```
 
-[b]NibbleEnd[/b]
+- NibbleEnd
+
 Removes bytes starting from the end with given length
 Returns: Byte Array
-````
+```
 Byte().NibbleEnd(<length>)
-````
+```
 
-[b]ToHexString[/b]
+- ToHexString
+
 Creates a hexadecimal string format of the byte array
 Returns: String
-````
+```
 Byte().ToHexString()
-````
+```
 
-[b]Randomize[/b]
+- Randomize
+
 Creates non-zero based bytes within a byte array
 Returns: Byte Array
-````
+```
 Byte().Randomize()
-````
+```
 
-[b]Checksum[/b]
+- Checksum
+
 Creates a checksum from the byte array, providing a HashAlgorithm instance
 Returns: Byte Array
-````
+```
 Byte().Checksum(<provider>)
-````
+```
 
-[b]ToSHA256Checksum[/b]
+- ToSHA256Checksum
+
 Creates a SHA256 checksum from the byte array
 Returns: Byte Array
-````
+```
 Byte().ToSHA256Checksum()
-````
+```
 
-[b]ToSHA384Checksum[/b]
+- ToSHA384Checksum[/b]
+
 Creates a SHA384 checksum from the byte array
 Returns: Byte Array
-````
+```
 Byte().ToSHA384Checksum()
-````
+```
 
-[b]ToSHA512Checksum[/b]
+- ToSHA512Checksum
+
 Creates a SHA512 checksum from the byte array
 Returns: Byte Array
-````
+```
 Byte().ToSHA512Checksum()
-````
+```
 
-[b]Compress[/b]
+- Compress
+
 Compresses the byte array with built-in GZip algorithm (Deflation variant)
 Returns: Byte Array
-````
+```
 Byte().Compress(<optional:CompressionLevel[none,fast,optimal]>)
-````
+```
 
-[b]Decompress[/b]
+- Decompress
+
 Decompresses the byte array with built-in GZip algorithm (Deflation variant)
 Returns: Byte Array
-````
+```
 Byte().Decompress()
-````
+```
