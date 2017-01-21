@@ -26,7 +26,7 @@ Byte().Append(<sequence>)
 
 - BeginsWith
 
-Checks if the byte array begins with the sequence
+Checks if the byte array begins with a sequence
 Returns: Boolean
 ```
 Byte().BeginsWith(<sequence>)
@@ -34,7 +34,7 @@ Byte().BeginsWith(<sequence>)
 
 - EndsWith
 
-Checks if the byte array ends with the sequence
+Checks if the byte array ends with a sequence
 Returns: Boolean
 ```
 Byte().EndsWith(<sequence>)
