@@ -32,13 +32,13 @@ Public Module TypeExt
         Return src
     End Function
     <System.Runtime.CompilerServices.Extension>
-    Public Function NibleEnd(src As Byte(), len As Integer) As Byte()
+    Public Function NibbleEnd(src As Byte(), len As Integer) As Byte()
         Dim buffer() As Byte = New Byte((src.Length - 1) - len) {}
         Array.Copy(src, buffer, src.Length - len)
         Return buffer
     End Function
     <System.Runtime.CompilerServices.Extension>
-    Public Function NibleTop(src As Byte(), len As Integer) As Byte()
+    Public Function NibbleTop(src As Byte(), len As Integer) As Byte()
         Dim buffer() As Byte = New Byte((src.Length - 1) - len) {}
         Array.Copy(src, len, buffer, 0, buffer.Length)
         Return buffer
