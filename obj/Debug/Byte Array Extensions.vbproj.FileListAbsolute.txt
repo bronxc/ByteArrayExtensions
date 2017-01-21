@@ -1,0 +1,8 @@
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\bin\Debug\Byte Array Extensions.dll
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\bin\Debug\Byte Array Extensions.pdb
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\bin\Debug\Byte Array Extensions.xml
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\obj\Debug\Byte_Array_Extensions.Resources.resources
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\obj\Debug\Byte Array Extensions.vbproj.GenerateResource.Cache
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\obj\Debug\Byte Array Extensions.dll
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\obj\Debug\Byte Array Extensions.xml
+C:\Users\Barret\Documents\GitHub\Byte Array Extensions\obj\Debug\Byte Array Extensions.pdb
