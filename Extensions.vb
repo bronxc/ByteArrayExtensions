@@ -10,7 +10,11 @@ Public Module TypeExt
             If src.Length <> 0 Then
                 dataPtr = Marshal.AllocHGlobal(src.Length)
                 Marshal.Copy(src, 0, dataPtr, src.Length)
-                Return Marshal.PtrToStructure(dataPtr, GetType(T))
+                Dim result As Object = Marshal.PtrToStructure(dataPtr, GetType(T))
+                If (TypeOf result Is T) Then
+                    Return CType(result, T)
+                End If
+                Throw New Exception("Unable to cast stream to desired object type")
             End If
             Throw New Exception("Structure length mismatch")
         Finally
