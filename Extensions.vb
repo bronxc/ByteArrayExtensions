@@ -3,33 +3,19 @@ Imports System.IO.Compression
 Imports System.Security.Cryptography
 Imports System.Runtime.InteropServices
 Public Module TypeExt
-    Public Function Cast(Of T)(src As Byte()) As T
-        If (src IsNot Nothing AndAlso src.Length > 0) Then
-            Dim result As Object = Nothing
-            Dim structPtr As IntPtr = IntPtr.Zero
-            Dim structLen As Integer = Marshal.SizeOf(GetType(T))
-            Try
-                If structLen <= 0 AndAlso src.Length < structLen Then
-                    Throw New Exception("Structure length mismatch")
-                End If
-                structPtr = Marshal.AllocHGlobal(structLen)
-                Marshal.Copy(src, 0, structPtr, structLen)
-                If structPtr = IntPtr.Zero Then
-                    Throw New Exception(String.Format("Allocation pointer for '{0}' returned zero", GetType(T).GetType.Name))
-                End If
-                result = Marshal.PtrToStructure(structPtr, GetType(T))
-                If (Not TypeOf result Is T) Then
-                    Throw New Exception("Object type does not match desired type")
-                End If
-                Return CType(result, T)
-            Finally
-                If structPtr <> IntPtr.Zero Then
-                    Marshal.FreeHGlobal(structPtr)
-                End If
-            End Try
-        Else
-            Throw New NullReferenceException
-        End If
+    <System.Runtime.CompilerServices.Extension>
+    Public Function QuickCast(Of T)(src As Byte()) As Object
+        Dim dataPtr As IntPtr = IntPtr.Zero
+        Try
+            If src.Length <> 0 Then
+                dataPtr = Marshal.AllocHGlobal(src.Length)
+                Marshal.Copy(src, 0, dataPtr, src.Length)
+                Return Marshal.PtrToStructure(dataPtr, GetType(T))
+            End If
+            Throw New Exception("Structure length mismatch")
+        Finally
+            If (dataPtr <> IntPtr.Zero) Then Marshal.FreeHGlobal(dataPtr)
+        End Try
     End Function
     <System.Runtime.CompilerServices.Extension>
     Public Function Insert(src As Byte(), sequence As Byte()) As Byte()
@@ -109,6 +95,16 @@ Public Module TypeExt
         End If
         Return False
     End Function
+    <System.Runtime.CompilerServices.Extension>
+    Public Sub SaveAs(src As Byte(), filename As String, Optional Overwrite As Boolean = False)
+        If (src IsNot Nothing) Then
+            If (File.Exists(filename) AndAlso Overwrite) Then File.Delete(filename)
+            Using bw As New BinaryWriter(File.Open(filename, FileMode.OpenOrCreate))
+                bw.Write(src)
+            End Using
+        End If
+    End Sub
+
     <Runtime.CompilerServices.Extension>
     Public Function ToHexString(src() As Byte) As String
         Return String.Join(String.Empty, Array.ConvertAll(src, Function(b) b.ToString("X2")))
@@ -146,7 +142,7 @@ Public Module TypeExt
         End Using
     End Function
     <Runtime.CompilerServices.Extension>
-    Public Function ToCrc32(src() As Byte) As Byte()
+    Public Function ToCrc32(src() As Byte) As UInt32
         Dim offset As UInt32 = 0
         Dim crc As UInt32 = &HFFFFFFFFUI
         Dim values() As UInt32 = New UInt32(255) {}
@@ -165,7 +161,7 @@ Public Module TypeExt
             Dim index As Byte = CByte(((crc) And &HFF) Xor src(i))
             crc = CUInt((crc >> 8) Xor values(index))
         Next
-        Return BitConverter.GetBytes(Not crc)
+        Return Not crc
     End Function
     <Runtime.CompilerServices.Extension>
     Public Function Compress(src() As Byte, Optional CompressionLevel As CompressionLevel = CompressionLevel.Fastest) As Byte()
