@@ -1,10 +1,39 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
 Imports System.Security.Cryptography
+Imports System.Runtime.InteropServices
 Public Module TypeExt
+    Public Function Cast(Of T)(src As Byte()) As T
+        If (src IsNot Nothing AndAlso src.Length > 0) Then
+            Dim result As Object = Nothing
+            Dim structPtr As IntPtr = IntPtr.Zero
+            Dim structLen As Integer = Marshal.SizeOf(GetType(T))
+            Try
+                If structLen <= 0 AndAlso src.Length < structLen Then
+                    Throw New Exception("Structure length mismatch")
+                End If
+                structPtr = Marshal.AllocHGlobal(structLen)
+                Marshal.Copy(src, 0, structPtr, structLen)
+                If structPtr = IntPtr.Zero Then
+                    Throw New Exception(String.Format("Allocation pointer for '{0}' returned zero", GetType(T).GetType.Name))
+                End If
+                result = Marshal.PtrToStructure(structPtr, GetType(T))
+                If (Not TypeOf result Is T) Then
+                    Throw New Exception("Object type does not match desired type")
+                End If
+                Return CType(result, T)
+            Finally
+                If structPtr <> IntPtr.Zero Then
+                    Marshal.FreeHGlobal(structPtr)
+                End If
+            End Try
+        Else
+            Throw New NullReferenceException
+        End If
+    End Function
     <System.Runtime.CompilerServices.Extension>
     Public Function Insert(src As Byte(), sequence As Byte()) As Byte()
-        Dim buffer() As Byte = New Byte(src.Length + sequence.Length) {}
+        Dim buffer() As Byte = New Byte(src.Length + sequence.Length - 1) {}
         sequence.CopyTo(buffer, 0)
         src.CopyTo(buffer, sequence.Length)
         Return buffer
@@ -12,8 +41,8 @@ Public Module TypeExt
     <System.Runtime.CompilerServices.Extension>
     Public Function Insert(src As Byte(), sequence As Byte(), index As Integer) As Byte()
         Dim srcbegin() As Byte = New Byte(index) {}
-        Dim srcend() As Byte = New Byte(src.Length - index) {}
-        Dim buffer() As Byte = New Byte(src.Length + sequence.Length) {}
+        Dim srcend() As Byte = New Byte(src.Length - index - 1) {}
+        Dim buffer() As Byte = New Byte(src.Length + sequence.Length - 1) {}
         Array.Copy(src, 0, srcbegin, 0, index)
         Array.Copy(src, index, srcend, 0, src.Length - index)
         srcbegin.CopyTo(buffer, 0)
@@ -99,22 +128,44 @@ Public Module TypeExt
         Throw New NullReferenceException()
     End Function
     <Runtime.CompilerServices.Extension>
-    Public Function ToSHA256Checksum(src() As Byte) As Byte()
+    Public Function ToSHA256(src() As Byte) As Byte()
         Using Cryptograph As Security.Cryptography.SHA256 = Security.Cryptography.SHA256.Create()
             Return Cryptograph.ComputeHash(src)
         End Using
     End Function
     <Runtime.CompilerServices.Extension>
-    Public Function ToSHA384Checksum(src() As Byte) As Byte()
+    Public Function ToSHA384(src() As Byte) As Byte()
         Using Cryptograph As Security.Cryptography.SHA384 = Security.Cryptography.SHA384.Create()
             Return Cryptograph.ComputeHash(src)
         End Using
     End Function
     <Runtime.CompilerServices.Extension>
-    Public Function ToSHA512Checksum(src() As Byte) As Byte()
+    Public Function ToSHA512(src() As Byte) As Byte()
         Using Cryptograph As Security.Cryptography.SHA512 = Security.Cryptography.SHA512.Create()
             Return Cryptograph.ComputeHash(src)
         End Using
+    End Function
+    <Runtime.CompilerServices.Extension>
+    Public Function ToCrc32(src() As Byte) As Byte()
+        Dim offset As UInt32 = 0
+        Dim crc As UInt32 = &HFFFFFFFFUI
+        Dim values() As UInt32 = New UInt32(255) {}
+        For x As UInt32 = 0 To Convert.ToUInt32(values.Length - 1)
+            offset = x
+            For y As Integer = 8 To 1 Step -1
+                If (offset And 1) = 1 Then
+                    offset = CUInt((offset >> 1) Xor &HEDB88320UI)
+                Else
+                    offset >>= 1
+                End If
+            Next
+            values(Convert.ToInt32(x)) = offset
+        Next
+        For i As Integer = 0 To src.Length - 1
+            Dim index As Byte = CByte(((crc) And &HFF) Xor src(i))
+            crc = CUInt((crc >> 8) Xor values(index))
+        Next
+        Return BitConverter.GetBytes(Not crc)
     End Function
     <Runtime.CompilerServices.Extension>
     Public Function Compress(src() As Byte, Optional CompressionLevel As CompressionLevel = CompressionLevel.Fastest) As Byte()
