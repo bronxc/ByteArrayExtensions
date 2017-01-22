@@ -4,20 +4,16 @@ Imports System.Security.Cryptography
 Public Module TypeExt
     <System.Runtime.CompilerServices.Extension>
     Public Function Insert(src As Byte(), sequence As Byte()) As Byte()
-        Dim buffer() As Byte = New Byte() {}
-        Array.Resize(Of Byte)(buffer, src.Length + sequence.Length)
+        Dim buffer() As Byte = New Byte(src.Length + sequence.Length) {}
         sequence.CopyTo(buffer, 0)
         src.CopyTo(buffer, sequence.Length)
         Return buffer
     End Function
     <System.Runtime.CompilerServices.Extension>
     Public Function Insert(src As Byte(), sequence As Byte(), index As Integer) As Byte()
-        Dim buffer() As Byte = New Byte() {}
-        Dim srcbegin() As Byte = New Byte() {}
-        Dim srcend() As Byte = New Byte() {}
-        Array.Resize(Of Byte)(srcbegin, index)
-        Array.Resize(Of Byte)(srcend, src.Length - index)
-        Array.Resize(Of Byte)(buffer, src.Length + sequence.Length)
+        Dim srcbegin() As Byte = New Byte(index) {}
+        Dim srcend() As Byte = New Byte(src.Length - index) {}
+        Dim buffer() As Byte = New Byte(src.Length + sequence.Length) {}
         Array.Copy(src, 0, srcbegin, 0, index)
         Array.Copy(src, index, srcend, 0, src.Length - index)
         srcbegin.CopyTo(buffer, 0)
@@ -30,10 +26,29 @@ Public Module TypeExt
         Return src.Insert(func.Invoke(src), index).Insert(sequence, index)
     End Function
     <System.Runtime.CompilerServices.Extension>
+    Public Function Truncate(src As Byte(), fixedLen As Integer) As Byte()
+        If (fixedLen <= src.Length) Then
+            Dim buffer() As Byte = New Byte(fixedLen) {}
+            Array.Copy(src, 0, buffer, 0, fixedLen)
+            Return buffer
+        End If
+        Throw New Exception("length must be within the range of the array")
+    End Function
+    <System.Runtime.CompilerServices.Extension>
+    Public Function Peek(src As Byte(), index As Integer, len As Integer) As Byte()
+        If (index <= src.Length AndAlso index + len <= src.Length) Then
+            Dim buffer() As Byte = New Byte(len - 1) {}
+            Array.Copy(src, index, buffer, 0, len)
+            Return buffer
+        End If
+        Throw New Exception("index and length must be within the range of the array")
+    End Function
+    <System.Runtime.CompilerServices.Extension>
     Public Function Append(ByRef src As Byte(), sequence As Byte()) As Byte()
-        Array.Resize(Of Byte)(src, src.Length + sequence.Length)
-        sequence.CopyTo(src, src.Length - sequence.Length)
-        Return src
+        Dim buffer() As Byte = New Byte(src.Length + sequence.Length - 1) {}
+        src.CopyTo(buffer, 0)
+        sequence.CopyTo(buffer, src.Length)
+        Return buffer
     End Function
     <System.Runtime.CompilerServices.Extension>
     Public Function NibbleEnd(src As Byte(), len As Integer) As Byte()
