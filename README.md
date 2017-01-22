@@ -17,6 +17,14 @@ Returns: Byte Array
 ```
 Byte().Insert(<sequence>,index)
 ```
+- InsertAfter
+
+Inserts a sequence after invoking function that passes the input
+
+Returns: Byte Array
+```
+Byte().InsertAfter(<Func(Of Byte)>,<sequence>,[optional: index])
+```
 
 - Append
 
