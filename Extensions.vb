@@ -26,6 +26,10 @@ Public Module TypeExt
         Return buffer
     End Function
     <System.Runtime.CompilerServices.Extension>
+    Public Function InsertAfter(src As Byte(), func As Func(Of Byte(), Byte()), sequence As Byte(), Optional index As Integer = 0) As Byte()
+        Return src.Insert(func.Invoke(src), index).Insert(sequence, index)
+    End Function
+    <System.Runtime.CompilerServices.Extension>
     Public Function Append(ByRef src As Byte(), sequence As Byte()) As Byte()
         Array.Resize(Of Byte)(src, src.Length + sequence.Length)
         sequence.CopyTo(src, src.Length - sequence.Length)
